@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario Consulta</title>
+    <link rel="icon" type="image/png" href="{% static 'principal/img/favicon.png' %}">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        header {
+            background-color: #6D8777;
+            color: white;
+            padding: 30px 20px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        form {
+            background-color: white;
+            padding: 30px 40px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-top: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+
+        form p {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .btn {
+            background-color: #485935;
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: block;
+            margin: 20px auto 0 auto;
+        }
+
+        .btn:hover {
+            background-color: #45624E;
+            transform: scale(1.03);
+        }
+
+        .volver {
+            display: inline-block;
+            margin-top: 30px;
+            text-decoration: none;
+            color: #93A267;
+            font-weight: bold;
+            transition: color 0.2s ease;
+        }
+
+        .volver:hover {
+            text-decoration: underline;
+            color: #45624E;
+        }
+
+        .autocomplete-box {
+            position: relative;
+        }
+
+        .autocomplete-results {
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            width: 100%;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .autocomplete-results div {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .autocomplete-results div:hover {
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Formulario de Consulta</h1>
+</header>
+
+<form method="post">
+    {% csrf_token %}
+
+    <p>
+        <label for="fecha">Fecha:</label>
+        <input type="date" name="fecha" value="{{ form.fecha.value|default:'' }}" required>
+    </p>
+
+    <p>
+        <label for="motivo">Motivo:</label>
+        <textarea name="motivo" rows="3" required>{{ form.motivo.value|default:'' }}</textarea>
+    </p>
+
+    <p>
+        <label for="diagnostico">Diagnóstico:</label>
+        <textarea name="diagnostico" rows="3">{{ form.diagnostico.value|default:'' }}</textarea>
+    </p>
+
+    <p>
+        <label for="mascota_input">Mascota:</label>
+        <div class="autocomplete-box">
+            <input type="text" id="mascota_input" placeholder="Buscar por nombre o dueño..." autocomplete="off">
+            <div id="mascota_results" class="autocomplete-results"></div>
+            <input type="hidden" name="mascota" id="mascota_hidden" value="{{ form.mascota.value|default:'' }}">
+        </div>
+    </p>
+
+    <button type="submit" class="btn">💾 Guardar Consulta</button>
+</form>
+
+<a href="#" onclick="history.back(); return false;" class="volver">⬅️ Volver atrás</a>
+
+<script>
+    const input = document.getElementById('mascota_input');
+    const results = document.getElementById('mascota_results');
+    const hidden = document.getElementById('mascota_hidden');
+
+    input.addEventListener('input', async () => {
+    const query = input.value.trim();
+    results.innerHTML = '';
+    if (query.length < 1) return;
+
+    try {
+        const response = await fetch(`/buscar_mascotas/?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        data.forEach(mascota => {
+            const div = document.createElement('div');
+            div.textContent = `${mascota.nombre_mascota} (${mascota.cliente})`;
+            div.dataset.id = mascota.id;
+            div.addEventListener('click', () => {
+                input.value = `${mascota.nombre_mascota} (${mascota.cliente})`;
+                hidden.value = mascota.id;
+                results.innerHTML = '';
+            });
+            results.appendChild(div);
+        });
+    } catch (error) {
+        console.error("Error al buscar mascotas:", error);
+    }
+});
+
+
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.autocomplete-box')) {
+            results.innerHTML = '';
+        }
+    });
+</script>
+
+</body>
+</html>
