@@ -3,14 +3,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>{% if form.instance.id %}Editar Cliente{% else %}Nuevo Cliente{% endif %}</title>
+    <title>{% if form.instance.id %}Editar Profesional{% else %}Nuevo Profesional{% endif %}</title>
     <link rel="icon" type="image/png" href="{% static 'principal/img/favicon.png' %}">
-    <link rel="stylesheet" href="{% static 'principal/css/formularios.css' %}">
+    <link rel="stylesheet" href="{% static 'principal/css/formularios.css' %}">    
 </head>
 <body>
 
 <header>
-    <h1>{% if form.instance.id %}Editar Cliente{% else %}Nuevo Cliente{% endif %}</h1>
+    <h1>{% if form.instance.id %}Editar Profesional{% else %}Nuevo Profesional{% endif %}</h1>
 </header>
 
 <div class="form-container">
@@ -20,7 +20,7 @@
         <button type="submit">Guardar</button>
     </form>
 
-    <a class="volver" href="{% url 'lista_clientes' %}">← Volver a la lista</a>
+    <a class="volver" href="{% url 'lista_profesionales' %}">← Volver a la lista</a>
 </div>
 
 </body>

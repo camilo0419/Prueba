@@ -1,0 +1,69 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Medicamentos</title>
+    <link rel="icon" type="image/png" href="{% static 'principal/img/favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'principal/css/listas.css' %}">
+</head>
+<body>
+
+<header>
+    <h1>💊 Módulo de Medicamentos</h1>
+    <a href="{% url 'crear_medicamento' %}" class="btn">➕ Agregar Medicamento</a>
+    <a href="{% url 'inicio' %}" class="btn">🏠 Volver al inicio</a>
+</header>
+
+<div class="search-box">
+    <input type="text" id="buscar" placeholder="🔍 Buscar por nombre o presentación...">
+</div>
+
+<table id="tabla-medicamentos">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Presentación</th>
+            <th>Stock</th>
+            <th>Vencimiento</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for m in medicamentos %}
+        <tr>
+            <td>{{ m.nombre_med }}</td>
+            <td>{{ m.presentacion }}</td>
+            <td>{{ m.stock_disponible }}</td>
+            <td>{{ m.fecha_vencimiento }}</td>
+            <td class="acciones">
+                <a href="{% url 'editar_medicamento' m.id %}">✏️ Editar</a> |
+                <a href="{% url 'eliminar_medicamento' m.id %}" onclick="return confirm('¿Eliminar este medicamento?')">🗑 Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No hay medicamentos registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<footer>
+    <p>© 2025 Veterinaria Amigos Peludos</p>
+</footer>
+
+<script>
+    const buscador = document.getElementById('buscar');
+    const filas = document.querySelectorAll('#tabla-medicamentos tbody tr');
+
+    buscador.addEventListener('keyup', function () {
+        const texto = this.value.toLowerCase();
+        filas.forEach(fila => {
+            const nombre = fila.cells[0].textContent.toLowerCase();
+            const presentacion = fila.cells[1].textContent.toLowerCase();
+            fila.style.display = (nombre.includes(texto) || presentacion.includes(texto)) ? '' : 'none';
+        });
+    });
+</script>
+
+</body>
+</html>

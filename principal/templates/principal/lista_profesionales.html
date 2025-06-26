@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Profesionales</title>
+    <link rel="icon" type="image/png" href="{% static 'principal/img/favicon.png' %}">
+    <link rel="stylesheet" href="{% static 'principal/css/listas.css' %}">
+</head>
+<body>
+
+<header>
+    <h1>🩺 Módulo de Profesionales</h1>
+    <a href="{% url 'crear_profesional' %}" class="btn">➕ Nuevo Profesional</a>
+    <a href="{% url 'inicio' %}" class="btn">🏠 Volver al inicio</a>
+</header>
+
+<div class="search-box">
+    <input type="text" id="buscar" placeholder="🔍 Buscar por nombre o especialidad...">
+</div>
+
+<table id="tabla-profesionales">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Tarjeta</th>
+            <th>Teléfono</th>
+            <th>Especialidad</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in profesionales %}
+        <tr>
+            <td>{{ p.nombre_prof }}</td>
+            <td>{{ p.tarjeta_profesional }}</td>
+            <td>{{ p.telefono }}</td>
+            <td>{{ p.especialidad }}</td>
+            <td class="acciones">
+                <a href="{% url 'editar_profesional' p.id %}">✏️ Editar</a> |
+                <a href="{% url 'eliminar_profesional' p.id %}" onclick="return confirm('¿Eliminar este profesional?')">🗑 Eliminar</a> |
+                <a href="{% url 'historial_cirugias' p.id %}">📋 Cirugías</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No hay profesionales registrados.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<footer>
+    <p>© 2025 Veterinaria Amigos Peludos</p>
+</footer>
+
+<script>
+    const buscador = document.getElementById('buscar');
+    const filas = document.querySelectorAll('#tabla-profesionales tbody tr');
+
+    buscador.addEventListener('keyup', function () {
+        const texto = this.value.toLowerCase();
+        filas.forEach(fila => {
+            const nombre = fila.cells[0].textContent.toLowerCase();
+            const especialidad = fila.cells[3].textContent.toLowerCase();
+            fila.style.display = (nombre.includes(texto) || especialidad.includes(texto)) ? '' : 'none';
+        });
+    });
+</script>
+
+</body>
+</html>
