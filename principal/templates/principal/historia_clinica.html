@@ -83,6 +83,7 @@
         .datos-mascota h2 {
             margin-top: 0;
             color: #45624E;
+            text-align: center;
         }
 
         .info-columns {
@@ -177,9 +178,18 @@
         .subseccion p {
             margin: 6px 0;
             line-height: 1.5;
+            text-align: justify;
+            text-indent: 20px;
         }
 
-                .floating-buttons {
+        .subseccion p strong {
+            display: inline-block;
+        width: 200px;
+        color: #485935;
+        }
+
+
+        .floating-buttons {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -241,8 +251,6 @@
 
 </head>
 
-
-
 <body>
 
 <header>
@@ -251,8 +259,11 @@
 
 <div class="floating-buttons">
     <a href="#" onclick="history.back(); return false;" class="btn">⬅ Volver</a>
-    <a href="#" onclick="window.print(); return false;" class="btn">🖨️ Imprimir</a>
+    {% if consultas %}
+        <a href="#" onclick="window.print(); return false;" class="btn">🖨️ Imprimir</a>
+    {% endif %}
 </div>
+
 
 <div class="container">
     <p class="fecha-impresion" id="fechaImpresion"></p>
@@ -262,7 +273,7 @@
             <img src="{% static 'principal/img/Logo.png' %}" alt="Logo Veterinaria Amigos Peludos">
         </div>
         <div class="datos-mascota">
-            <h2>Historia Clínica</h2>
+            <h2>Historia Clínica de {{ mascota.nombre_mascota }}</h2>
             <div class="info-columns">
                 <div>
                     <p><strong>Nombre:</strong> {{ mascota.nombre_mascota }}</p>
@@ -341,10 +352,11 @@
         {% endif %}
     </div>
     {% empty %}
-    <p>No hay consultas registradas para esta mascota.</p>
-    {% endfor %}
-
-   
+    <p style="text-align:center; font-size: 18px; color: #666;">No hay consultas registradas para esta mascota.</p>
+    <div style="text-align: center; margin-top: 30px;">
+    <a href="{% url 'crear_consulta' mascota.id %}" class="btn">➕ Registrar nueva consulta</a>
+    </div>
+    {% endfor %}   
 </div>
 
 <script>

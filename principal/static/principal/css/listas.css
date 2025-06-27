@@ -76,7 +76,7 @@ tr:nth-child(even) {
 td a {
     text-decoration: none;
     color: #6D8777;
-    font-weight: bold;
+    font-weight: bold;    
 }
 
 td a:hover {
@@ -235,3 +235,37 @@ footer {
     right: 20px;
     z-index: 1000;
 }
+
+.paginacion a.btn {
+    background-color: #6D8777;
+    color: white;
+    padding: 8px 16px;
+    margin: 0 5px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.paginacion a.btn:hover {
+    background-color: #3a4d30;
+}
+
+.centrado {
+    text-align: center;
+}
+
+.estado-activa {
+    color: orange;
+    font-weight: bold;
+}
+
+.estado-realizada {
+    color: green;
+    font-weight: bold;
+}
+
+.estado-cancelado {
+    color: red;
+    font-weight: bold;
+}
+

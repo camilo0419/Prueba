@@ -53,8 +53,6 @@
         <button type="submit" class="boton-form guardar">💾 Guardar</button>
         <a href="{% url 'lista_clientes' %}" class="boton-form">⬅️ Volver a la lista</a>
     </form>
-
-    
 </div>
 
 <script>
@@ -86,6 +84,27 @@
     document.addEventListener('click', e => {
         if (!e.target.closest('.autocomplete-box')) {
             results.innerHTML = '';
+        }
+    });
+    document.querySelector("form").addEventListener("submit", function(e) {
+        const clienteHidden = document.getElementById("cliente_hidden");
+        if (!clienteHidden.value) {
+            alert("⚠️ Debes seleccionar un dueño antes de guardar la mascota.");
+            e.preventDefault();
+        }
+    });
+    document.querySelector("form").addEventListener("submit", function(e) {
+    const clienteHidden = document.getElementById("cliente_hidden");
+    const clienteInput = document.getElementById("cliente_input");
+
+    // Validar si el campo está visible (es decir, si no hay cliente_bloqueado)
+        if (clienteHidden && !clienteHidden.value) {
+            alert("⚠️ Debes seleccionar un dueño antes de guardar la mascota.");
+            e.preventDefault();
+
+            if (clienteInput) {
+                clienteInput.classList.add("error");
+            }
         }
     });
 </script>

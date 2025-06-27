@@ -24,26 +24,22 @@ urlpatterns = [
 
     # CRUD de consultas
     path('consultas/lista/', views.lista_consultas, name='lista_consultas'),
-    path('consultas/nueva/', views.crear_consulta, name='crear_consulta'),
+    path('consultas/nueva/', views.crear_consulta_general, name='crear_consulta_general'),
+    path('consultas/nueva/<int:mascota_id>/', views.crear_consulta, name='crear_consulta'),
     path('consultas/editar/<int:consulta_id>/', views.editar_consulta, name='editar_consulta'),
     path('consultas/eliminar/<int:pk>/', views.eliminar_consulta, name='eliminar_consulta'),
-
     path('mascotas/<int:mascota_id>/historia/', views.historia_clinica, name='historia_clinica'),
     path('mascotas/<int:mascota_id>/historia/pdf/', views.exportar_historia_pdf, name='exportar_historia_pdf'),
-
     path('buscar_mascotas/', views.buscar_mascotas, name='buscar_mascotas'),
-
     path('consultas/detalle/<int:consulta_id>/', views.detalle_consulta, name='detalle_consulta'),
-
     path('consultas/<int:consulta_id>/formula/', views.crear_formula_medica, name='crear_formula_medica'),
     path('consulta/<int:consulta_id>/asignar_medicamentos/', views.asignar_medicamentos, name='asignar_medicamentos'),
     path('consulta/<int:consulta_id>/asignar_medicamentos/', views.asignar_medicamentos, name='asignar_medicamentos'),
     path('consulta/<int:consulta_id>/asignar_cirugia/', views.asignar_cirugia, name='asignar_cirugia'),
-
     path('consulta/<int:consulta_id>/asignar_medicamentos/', views.asignar_medicamentos, name='asignar_medicamentos'),
-
     #path('consulta/<int:consulta_id>/ver_formula/', views.ver_formula_medica, name='ver_formula_medica'),
     path('consulta/<int:consulta_id>/ver_formula/', views.ver_formula_medica, name='ver_formula'),
+
     path('formulas/', views.lista_formulas, name='lista_formulas'),
 
     
@@ -67,6 +63,7 @@ urlpatterns = [
     path('cirugias/', views.lista_cirugias, name='lista_cirugias'),
     path('cirugias/editar/<int:cirugia_id>/', views.editar_cirugia_directa, name='editar_cirugia_directa'),
     path('cirugias/cancelar/<int:cirugia_id>/', views.cancelar_cirugia, name='cancelar_cirugia'),
+    path('cirugias/realizar/<int:cirugia_id>/', views.cirugia_realizada, name='cirugia_realizada'),
     path('cirugias/pendientes/', views.cirugias_pendientes, name='cirugias_pendientes'),
     path('cirugias/nueva/', views.crear_cirugia, name='crear_cirugia'),
 

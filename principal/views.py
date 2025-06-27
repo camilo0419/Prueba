@@ -16,6 +16,7 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect
 from django.utils import timezone
 from principal.utils.export_excel import generar_excel
+from django.core.paginator import Paginator
 
 
 def inicio(request):
@@ -96,19 +97,27 @@ def crear_mascota(request):
         'cliente': cliente  # lo usamos para mostrar el nombre
     })
 
-
-
-
 def editar_mascota(request, pk):
     mascota = get_object_or_404(Mascota, pk=pk)
+    cliente = mascota.cliente  # Obtenemos el cliente actual (dueño)
+
     if request.method == 'POST':
         form = MascotaForm(request.POST, instance=mascota)
         if form.is_valid():
-            form.save()
+            mascota_editada = form.save(commit=False)
+            mascota_editada.cliente = cliente  # Evitamos que se cambie el dueño
+            mascota_editada.save()
             return redirect('lista_mascotas')
     else:
         form = MascotaForm(instance=mascota)
-    return render(request, 'principal/formulario_mascota.html', {'form': form, 'modo': 'Editar'})
+
+    return render(request, 'principal/formulario_mascota.html', {
+        'form': form,
+        'modo': 'Editar',
+        'cliente_bloqueado': True,
+        'cliente': cliente
+    })
+
 
 
 def eliminar_mascota(request, pk):
@@ -139,17 +148,25 @@ def lista_consultas(request):
     consultas = Consulta.objects.select_related('mascota').order_by('-fecha')
     return render(request, 'principal/lista_consultas.html', {'consultas': consultas})
 
-def crear_consulta(request):
+def crear_consulta(request, mascota_id):
+    mascota = get_object_or_404(Mascota, pk=mascota_id)
     if request.method == 'POST':
         form = ConsultaForm(request.POST)
         if form.is_valid():
-            consulta = form.save()
-            return redirect('detalle_consulta', consulta.id)  # Redirige siempre al detalle
+            consulta = form.save(commit=False)
+            consulta.mascota = mascota
+            consulta.save()
+            return redirect('historia_clinica', mascota.id)
     else:
         form = ConsultaForm()
-    return render(request, 'principal/formulario_consulta.html', {'form': form})
+    return render(request, 'principal/formulario_consulta.html', {
+        'form': form,
+        'mascota': mascota
+    })
 
-
+def crear_consulta_general(request):
+    # Redirige a una búsqueda de mascota o muestra error
+    return HttpResponse("Selecciona una mascota para iniciar una consulta.")
 
 def editar_consulta(request, consulta_id):
     consulta = get_object_or_404(Consulta, pk=consulta_id)
@@ -363,12 +380,26 @@ def lista_formulas(request):
     return render(request, 'principal/lista_formulas.html', context)
 
 def lista_medicamentos(request):
-    medicamentos = Medicamento.objects.all()
-    return render(request, 'principal/lista_medicamentos.html', {'medicamentos': medicamentos})
+    medicamentos = Medicamento.objects.filter(activo=True).order_by('nombre_med')  # o el filtro que uses
+    paginator = Paginator(medicamentos, 10)  # 10 por página
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'principal/lista_medicamentos.html', {
+        'page_obj': page_obj
+    })
 
 def lista_profesionales(request):
-    profesionales = Profesional.objects.all()
-    return render(request, 'principal/lista_profesionales.html', {'profesionales': profesionales})
+    profesionales = Profesional.objects.filter(activo=True).order_by('nombre_prof')
+    paginator = Paginator(profesionales, 10)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'principal/lista_profesionales.html', {
+        'page_obj': page_obj
+    })
 
 # Editar Medicamento
 def editar_medicamento(request, pk):
@@ -535,10 +566,17 @@ def editar_cirugia_directa(request, cirugia_id):
 
 def cancelar_cirugia(request, cirugia_id):
     cirugia = get_object_or_404(Cirugia, pk=cirugia_id, activo=True)
-    cirugia.activo = False
+    #cirugia.activo = False
     cirugia.estado = 'Cancelada'
     cirugia.save()
     messages.warning(request, "❌ Cirugía cancelada correctamente.")
+    return redirect('lista_cirugias')
+
+def cirugia_realizada(request, cirugia_id):
+    cirugia = get_object_or_404(Cirugia, pk=cirugia_id, activo=True)
+    cirugia.estado = 'Realizada'
+    cirugia.save()
+    messages.success(request, "✅ Cirugía marcada como realizada correctamente.")
     return redirect('lista_cirugias')
 
 def cirugias_pendientes(request):
